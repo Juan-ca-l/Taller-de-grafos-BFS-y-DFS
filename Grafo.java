@@ -175,6 +175,13 @@ public class Grafo {
             grafo.agregarArista(vertice, vertice + 1);
         }
 
+        grafo.agregarArista(0, 2);
+        grafo.agregarArista(0, 4);
+        grafo.agregarArista(2, 5);
+        grafo.agregarArista(3, 6);
+        grafo.agregarArista(5, 7);
+        System.out.println("Nota: las conexiones adicionales son simuladas.");
+
         grafo.grafo();
         grafo.imprimirRecorrido("DFS recursivo", grafo.dfsRecursivo(0));
         grafo.imprimirRecorrido("DFS iterativo", grafo.dfsIterativo(0));
