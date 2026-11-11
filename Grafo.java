@@ -6,12 +6,32 @@ import java.util.Queue;
 
 public class Grafo {
     private final boolean[][] matrizAdyacencia;
+    private final String[] nombresVertices;
 
     public Grafo(int cantidadVertices) {
         if (cantidadVertices < 0) {
             throw new IllegalArgumentException("La cantidad de vertices no puede ser negativa.");
         }
         matrizAdyacencia = new boolean[cantidadVertices][cantidadVertices];
+        nombresVertices = new String[cantidadVertices];
+        for (int vertice = 0; vertice < cantidadVertices; vertice++) {
+            nombresVertices[vertice] = "Vertice " + vertice;
+        }
+    }
+
+    public Grafo(String... nombresVertices) {
+        this(nombresVertices.length);
+        for (int vertice = 0; vertice < nombresVertices.length; vertice++) {
+            asignarNombreVertice(vertice, nombresVertices[vertice]);
+        }
+    }
+
+    public void asignarNombreVertice(int vertice, String nombre) {
+        validarVertice(vertice);
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del vertice no puede estar vacio.");
+        }
+        nombresVertices[vertice] = nombre.trim();
     }
 
     public void agregarArista(int origen, int destino) {
@@ -39,16 +59,16 @@ public class Grafo {
     }
 
     public void grafo() {
-        System.out.print("   ");
-        for (int vertice = 0; vertice < matrizAdyacencia.length; vertice++) {
-            System.out.print(vertice + " ");
+        System.out.printf("%-16s", "");
+        for (String nombre : nombresVertices) {
+            System.out.printf("%-16s", nombre);
         }
         System.out.println();
 
         for (int fila = 0; fila < matrizAdyacencia.length; fila++) {
-            System.out.print(fila + ": ");
+            System.out.printf("%-16s", nombresVertices[fila]);
             for (int columna = 0; columna < matrizAdyacencia.length; columna++) {
-                System.out.print((matrizAdyacencia[fila][columna] ? 1 : 0) + " ");
+                System.out.printf("%-16d", matrizAdyacencia[fila][columna] ? 1 : 0);
             }
             System.out.println();
         }
@@ -56,10 +76,21 @@ public class Grafo {
 
     public void imprimirArista(int origen, int destino) {
         if (existeArista(origen, destino)) {
-            System.out.println("Existe una arista entre " + origen + " y " + destino + ".");
+            System.out.println("Existe una vía entre " + nombresVertices[origen] + " y " + nombresVertices[destino] + ".");
         } else {
-            System.out.println("No existe una arista entre " + origen + " y " + destino + ".");
+            System.out.println("No existe una vía entre " + nombresVertices[origen] + " y " + nombresVertices[destino] + ".");
         }
+    }
+
+    private void imprimirRecorrido(String tipo, List<Integer> recorrido) {
+        System.out.print(tipo + ": ");
+        for (int posicion = 0; posicion < recorrido.size(); posicion++) {
+            if (posicion > 0) {
+                System.out.print(" -> ");
+            }
+            System.out.print(nombresVertices[recorrido.get(posicion)]);
+        }
+        System.out.println();
     }
 
     public List<Integer> dfsRecursivo(int inicio) {
@@ -128,17 +159,26 @@ public class Grafo {
     }
 
     public static void main(String[] args) {
-        Grafo grafo = new Grafo(5);
-        grafo.agregarArista(0, 1);
-        grafo.agregarArista(0, 2);
-        grafo.agregarArista(1, 3);
-        grafo.agregarArista(1, 4);
-        grafo.agregarArista(2, 4);
+        Grafo grafo = new Grafo(
+                "Bogotá D.C.",
+                "Chipaque",
+                "Cáqueza",
+                "Quetame",
+                "Guayabetal",
+                "Villavicencio",
+                "Restrepo",
+                "Cumaral",
+                "Paratebueno"
+        );
+
+        for (int vertice = 0; vertice < 8; vertice++) {
+            grafo.agregarArista(vertice, vertice + 1);
+        }
 
         grafo.grafo();
-        System.out.println("DFS recursivo: " + grafo.dfsRecursivo(0));
-        System.out.println("DFS iterativo: " + grafo.dfsIterativo(0));
-        System.out.println("BFS: " + grafo.bfs(0));
+        grafo.imprimirRecorrido("DFS recursivo", grafo.dfsRecursivo(0));
+        grafo.imprimirRecorrido("DFS iterativo", grafo.dfsIterativo(0));
+        grafo.imprimirRecorrido("BFS", grafo.bfs(0));
         grafo.imprimirArista(0, 1);
         grafo.eliminarArista(0, 1);
         grafo.imprimirArista(0, 1);
